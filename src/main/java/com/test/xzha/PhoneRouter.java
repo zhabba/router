@@ -1,11 +1,13 @@
 package com.test.xzha;
 
 import com.test.xzha.config.RouterConfigReader;
-import com.test.xzha.reader.input.InputReader;
+import com.test.xzha.reader.dir.DirReader;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
 
 public final class PhoneRouter
 {
@@ -24,22 +26,18 @@ public final class PhoneRouter
         }
         PhoneRouter pr = new PhoneRouter();
         try {
-            Properties props = RouterConfigReader.readIniFile(args[0]);
-            System.out.println(props.getProperty("prices.dir", "prices"));
+            PROPS = RouterConfigReader.readIniFile(args[0]);
+            Scanner input = new Scanner(System.in);
+            System.out.println(PROPS.getProperty("input.prompt"));
+            String phone;
+            while (input.hasNext() && (!"exit".equals(phone = input.next().toLowerCase()))) {
+                pr.route(phone);
+                System.out.println(PROPS.getProperty("input.prompt"));
+            }
+            input.close();
         } catch (IOException e) {
             LOG.error("Can't find " + args[0], e);
             System.exit(2);
-        }
-        InputReader ir = new InputReader();
-        String phone;
-        while (true) {
-            System.out.print("Please enter phone number >>> ");
-            phone = ir.getInput();
-            if (phone != null) {
-                pr.route(phone);
-            } else {
-                System.out.println("Phone number can be only numeric.");
-            }
         }
     }
 
@@ -47,7 +45,10 @@ public final class PhoneRouter
      *
      * @param phone
      */
-    private void route(String phone) {
-        System.out.println(phone);
+    private void route(String phone) throws IOException {
+        LOG.debug("will route phone: " + phone);
+        DirReader dr = new DirReader();
+        Map<String, String[]> total = dr.readDir(PROPS.getProperty("prices.dir"), phone);
+        System.out.println("Total: " + total.toString());
     }
 }
