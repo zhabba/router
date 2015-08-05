@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
@@ -19,7 +21,7 @@ import java.util.concurrent.Executors;
 public class DirReader {
 	private static final Logger LOG = Logger.getLogger(DirReader.class);
 	ExecutorService executor;
-	private ExecutorCompletionService<Map<String, String[]>> completionService;
+	private ExecutorCompletionService<List<String[]>> completionService;
 
 	public DirReader() {
 		executor = Executors.newCachedThreadPool();
@@ -27,23 +29,22 @@ public class DirReader {
 	}
 
 
-	public Map<String, String[]> readDir(String dirPath, String phone) throws IOException {
+	public List<String[]> readDir(String dirPath, String phone) throws IOException {
 		FileReader.setFilesCounter(0);
-		Map<String, String[]> totalMatches = new TreeMap<>();
+		List<String[]> totalMatches = new ArrayList<>();
 		Files.walkFileTree(Paths.get(dirPath), new FileReader(completionService, phone));
 		int filesCounter = FileReader.getFilesCounter();
 		LOG.debug("Processed " + filesCounter + " files totally ...");
 		for (int i = 0; i < filesCounter; i++) {
 			try {
-				Map<String, String[]> resultMap = completionService.take().get();
+				List<String[]> resultMap = completionService.take().get();
 				if (resultMap != null) {
-					totalMatches.putAll(resultMap);
-					System.out.println("Result: " + resultMap.toString());
+					totalMatches.addAll(resultMap);
 				}
 			} catch (InterruptedException e) {
-				LOG.error("Interrupted ...");
+				LOG.error("Interrupted ...", e);
 			} catch (ExecutionException e) {
-				LOG.error("Execution exception ...");
+				LOG.error("Execution exception ...", e);
 			}
 		}
 		executor.shutdown();
