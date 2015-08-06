@@ -6,67 +6,69 @@ import com.test.xzha.reader.dir.DirReader;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.*;
 
-public final class PhoneRouter
-{
+public final class PhoneRouter {
     private static final Logger LOG = Logger.getLogger(PhoneRouter.class);
-    private static Properties props;
-    private static RouterCache cache;
-    private static DirReader dirReader;
+    private Properties props;
+    private RouterCache cache;
+    private DirReader dirReader;
+
+    public PhoneRouter(String iniPath) throws IOException {
+        // read config
+        props = RouterConfigReader.readIniFile(iniPath);
+
+        // init cache
+        String cacheName = props.getProperty("cache.name", "routes");
+        cache = new RouterCache(cacheName);
+
+        // init DirReader
+        dirReader = new DirReader();
+    }
+
     /**
      * Entry point
+     *
      * @param args
      */
-    public static void main( String[] args )
-    {
+    public static void main(String[] args) {
         // check argument is provided
         if (args.length == 0) {
             System.out.println("Please provide ini file path as first argument ...");
             System.exit(1);
         }
-        PhoneRouter pr = new PhoneRouter();
         try {
-            // read config
-            props = RouterConfigReader.readIniFile(args[0]);
-
-            // init cache
-            String cacheName = props.getProperty("cache.name", "routes");
-            cache = new RouterCache(cacheName);
-
-            // init DirReader
-            dirReader = new DirReader();
-
-            // read phone from STDIN
-            Scanner input = new Scanner(System.in);
-            System.out.print(props.getProperty("input.prompt"));
-            String phone;
-            while (input.hasNext() && (!"exit".equals(phone = input.next().toLowerCase()))) {
-                if (isNumeric(phone)) {
-                    pr.route(phone);
-                } else {
-                    System.out.println("Phone must contain only digits.");
-                }
-                System.out.print(props.getProperty("input.prompt"));
-            }
-
-            // free resources
-            input.close();
-            cache.clear();
-            cache.getCacheManager().shutdown();
-            dirReader.shutdown();
+            PhoneRouter pr = new PhoneRouter(args[0]);
+            pr.getInputAndProcess();
         } catch (IOException e) {
-            LOG.error("Got error: ", e);
             System.exit(2);
         }
+
+    }
+
+    private void getInputAndProcess() throws IOException {
+        // read phone from STDIN
+        Scanner input = new Scanner(System.in);
+        System.out.print(props.getProperty("input.prompt"));
+        String phone;
+        while (input.hasNext() && (!"exit".equals(phone = input.next().toLowerCase()))) {
+            if (isNumeric(phone)) {
+                this.route(phone);
+            } else {
+                System.out.println("Phone must contain only digits.");
+            }
+            System.out.print(props.getProperty("input.prompt"));
+        }
+        // free resources
+        input.close();
+        cache.clear();
+        cache.getCacheManager().shutdown();
+        dirReader.shutdown();
     }
 
     /**
      * Find optimal route for given phone number
+     *
      * @param phone String
      */
     private void route(String phone) throws IOException {
@@ -87,6 +89,7 @@ public final class PhoneRouter
 
     /**
      * Traverse all available files with prices to find prefix and price
+     *
      * @param phone
      * @return
      * @throws IOException
@@ -109,6 +112,7 @@ public final class PhoneRouter
     /**
      * Check whether a string consists of digits
      * (much faster than regexp)
+     *
      * @param str String
      * @return boolean
      */
@@ -124,6 +128,7 @@ public final class PhoneRouter
 
     // comparators
     private static class CompareByPrefixLength implements Comparator<String[]> {// descending order
+
         @Override
         public int compare(String[] o1, String[] o2) {
             String prefix1 = o1[0];
@@ -139,17 +144,12 @@ public final class PhoneRouter
     }
 
     private static class CompareByPrice implements Comparator<String[]> {// ascending order
+
         @Override
         public int compare(String[] o1, String[] o2) {
             double price1 = Double.parseDouble(o1[1]);
             double price2 = Double.parseDouble(o2[1]);
-            if (price1 < price2) {
-                return 1;
-            } else if (price1 > price2) {
-                return -1;
-            } else {
-                return 0;
-            }
+            return Double.compare(price2, price1);
         }
     }
 }
