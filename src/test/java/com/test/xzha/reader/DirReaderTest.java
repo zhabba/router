@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -71,12 +72,32 @@ public class DirReaderTest {
 
         List<String[]> total6 = new ArrayList<>();
 
-        assertEquals(total1.size(), dr.searchPrefixDirWalk(dirPath, phone1).size());
-        assertEquals(total2.size(), dr.searchPrefixDirWalk(dirPath, phone2).size());
-        assertEquals(total3.size(), dr.searchPrefixDirWalk(dirPath, phone3).size());
-        assertEquals(total4.size(), dr.searchPrefixDirWalk(dirPath, phone4).size());
-        assertEquals(total5.size(), dr.searchPrefixDirWalk(dirPath, phone5).size());
-        assertEquals(total6.size(), dr.searchPrefixDirWalk(dirPath, phone6).size());
+        String[][] arr1 = new String[total1.size()][3];
+        List<String[]> res1 = dr.searchPrefixDirWalk(dirPath, phone1);
+        String[][] arr11 = new String[res1.size()][3];
+
+        String[][] arr2 = new String[total2.size()][3];
+        List<String[]> res2 = dr.searchPrefixDirWalk(dirPath, phone2);
+        String[][] arr21 = new String[res2.size()][3];
+
+        String[][] arr3 = new String[total2.size()][3];
+        List<String[]> res3 = dr.searchPrefixDirWalk(dirPath, phone3);
+        String[][] arr31 = new String[res3.size()][3];
+
+        String[][] arr4 = new String[total4.size()][3];
+        List<String[]> res4 = dr.searchPrefixDirWalk(dirPath, phone4);
+        String[][] arr41 = new String[res4.size()][3];
+
+        String[][] arr5 = new String[total5.size()][3];
+        List<String[]> res5 = dr.searchPrefixDirWalk(dirPath, phone5);
+        String[][] arr51 = new String[res5.size()][3];
+
+        assertArrayEquals(total1.toArray(arr1), res1.toArray(arr11));
+        assertArrayEquals(total2.toArray(arr2), res2.toArray(arr21));
+        assertArrayEquals(total3.toArray(arr3), res3.toArray(arr31));
+        assertArrayEquals(total4.toArray(arr4), res4.toArray(arr41));
+        assertArrayEquals(total5.toArray(arr5), res5.toArray(arr51));
+        assertArrayEquals(total6.toArray(), dr.searchPrefixDirWalk(dirPath, phone6).toArray());
     }
 
     @Test(expected = IOException.class)
