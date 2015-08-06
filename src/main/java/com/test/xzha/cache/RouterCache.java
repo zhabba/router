@@ -5,8 +5,6 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import org.apache.log4j.Logger;
 
-import java.util.Arrays;
-
 /**
  * Class com.test.xzha.cache.RouterCache
  * created at 06.08.15 - 13:00
