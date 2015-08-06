@@ -1,0 +1,3 @@
+#!/bin/sh                                                                                                                                                                                                      
+                                                                                                                                                                                                               
+jre/bin/java -server -jar router-full.jar config/router.ini

@@ -7,8 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -29,7 +27,14 @@ public class DirReader {
 	}
 
 
-	public List<String[]> readDir(String dirPath, String phone) throws IOException {
+	/**
+	 * Find all prefixes matched to phone
+	 * @param dirPath root dir path
+	 * @param phone String
+	 * @return List<String[]> all records matched to given phone
+	 * @throws IOException
+	 */
+	public List<String[]> searchPrefixDirWalk(String dirPath, String phone) throws IOException {
 		FileReader.setFilesCounter(0);
 		List<String[]> totalMatches = new ArrayList<>();
 		Files.walkFileTree(Paths.get(dirPath), new FileReader(completionService, phone));

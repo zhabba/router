@@ -16,6 +16,7 @@
         <version.maven.dependency.plugin>2.8</version.maven.dependency.plugin>
         <version.maven.help.plugin>2.2</version.maven.help.plugin>
         <version.maven.exec.plugin>1.2.1</version.maven.exec.plugin>
+        <version.echcache>2.10.0</version.echcache>
     </properties>
 
     <dependencies>
@@ -30,7 +31,11 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>${version.echcache}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -94,13 +99,11 @@
                         </goals>
                     </execution>
                 </executions>
-                <!-- для отладочного запуска -->
                 <configuration>
                     <mainClass>com.test.xzha.PhoneRouter</mainClass>
                      <arguments>
                         <argument>config/router.ini</argument>
                     </arguments>
-                    <!-- <outputFile>cannon</outputFile> -->
                 </configuration>
             </plugin>
         </plugins>

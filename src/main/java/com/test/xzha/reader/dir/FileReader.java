@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 
 /**
- * Class com.test.xzha.reader.dir.FileVisitor
+ * Class com.test.xzha.reader.dir.FileReader
  * created at 05.08.15 - 15:58
  */
 public class FileReader extends SimpleFileVisitor<Path> {
@@ -50,7 +50,8 @@ public class FileReader extends SimpleFileVisitor<Path> {
 				lines.forEach(line -> {
                     if (!line.isEmpty()) {
                         String[] prefixPriceOperator = Arrays.copyOf(line.split("\\s+"), 3);
-                        if (phone.startsWith(prefixPriceOperator[0])) {
+						// Here is a place for optimisation - use not regex based search but char index based search
+						if (phone.startsWith(prefixPriceOperator[0])) {
                             String operator = file.getParent().getFileName().toString();
                             prefixPriceOperator[prefixPriceOperator.length - 1] = operator;
                             matches.add(prefixPriceOperator);
