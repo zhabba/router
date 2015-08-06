@@ -2,6 +2,7 @@ package com.test.xzha.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -17,7 +18,11 @@ public final class RouterConfigReader {
      * @throws IOException
      */
     public static Properties readIniFile(String iniPath) throws IOException {
-        PROPS.load(new FileInputStream(iniPath));
+        try(InputStream fileInputStream = new FileInputStream(iniPath)){
+            PROPS.load(fileInputStream);
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
         return PROPS;
     }
 }

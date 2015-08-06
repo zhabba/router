@@ -35,8 +35,7 @@ public final class PhoneRouter
 
             // init cache
             String cacheName = PROPS.getProperty("cache.name", "routes");
-            //cache = new RouterCache(cacheName);
-            cache = new RouterCache("some");
+            cache = new RouterCache(cacheName);
 
             // read phone from STDIN
             Scanner input = new Scanner(System.in);
@@ -120,7 +119,7 @@ public final class PhoneRouter
     }
 
     // comparators
-    private class CompareByPrefixLength implements Comparator<String[]> {// descending order
+    private static class CompareByPrefixLength implements Comparator<String[]> {// descending order
         @Override
         public int compare(String[] o1, String[] o2) {
             String prefix1 = o1[0];
@@ -135,7 +134,7 @@ public final class PhoneRouter
         }
     }
 
-    private class CompareByPrice implements Comparator<String[]> {// ascending order
+    private static class CompareByPrice implements Comparator<String[]> {// ascending order
         @Override
         public int compare(String[] o1, String[] o2) {
             double price1 = Double.parseDouble(o1[1]);
