@@ -35,7 +35,8 @@ public final class PhoneRouter
 
             // init cache
             String cacheName = PROPS.getProperty("cache.name", "routes");
-            cache = new RouterCache(cacheName);
+            //cache = new RouterCache(cacheName);
+            cache = new RouterCache("some");
 
             // read phone from STDIN
             Scanner input = new Scanner(System.in);
