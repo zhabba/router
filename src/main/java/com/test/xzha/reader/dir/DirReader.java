@@ -42,9 +42,9 @@ public class DirReader {
 		LOG.debug("Processed " + filesCounter + " files totally ...");
 		for (int i = 0; i < filesCounter; i++) {
 			try {
-				List<String[]> resultMap = completionService.take().get();
-				if (resultMap != null) {
-					totalMatches.addAll(resultMap);
+				List<String[]> result = completionService.take().get();
+				if (result != null) {
+					totalMatches.addAll(result);
 				}
 			} catch (InterruptedException e) {
 				LOG.error("Interrupted ...", e);
@@ -52,7 +52,13 @@ public class DirReader {
 				LOG.error("Execution exception ...", e);
 			}
 		}
-		executor.shutdown();
 		return totalMatches;
-	}
+    }
+
+    /**
+     * Shutdown ExecutorService
+     */
+	public void shutdown(){
+        executor.shutdown();
+    }
 }

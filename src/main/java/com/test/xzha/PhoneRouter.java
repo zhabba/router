@@ -15,8 +15,9 @@ import java.util.Scanner;
 public final class PhoneRouter
 {
     private static final Logger LOG = Logger.getLogger(PhoneRouter.class);
-    private static Properties PROPS;
+    private static Properties props;
     private static RouterCache cache;
+    private static DirReader dirReader;
     /**
      * Entry point
      * @param args
@@ -31,15 +32,18 @@ public final class PhoneRouter
         PhoneRouter pr = new PhoneRouter();
         try {
             // read config
-            PROPS = RouterConfigReader.readIniFile(args[0]);
+            props = RouterConfigReader.readIniFile(args[0]);
 
             // init cache
-            String cacheName = PROPS.getProperty("cache.name", "routes");
+            String cacheName = props.getProperty("cache.name", "routes");
             cache = new RouterCache(cacheName);
+
+            // init DirReader
+            dirReader = new DirReader();
 
             // read phone from STDIN
             Scanner input = new Scanner(System.in);
-            System.out.print(PROPS.getProperty("input.prompt"));
+            System.out.print(props.getProperty("input.prompt"));
             String phone;
             while (input.hasNext() && (!"exit".equals(phone = input.next().toLowerCase()))) {
                 if (isNumeric(phone)) {
@@ -47,13 +51,14 @@ public final class PhoneRouter
                 } else {
                     System.out.println("Phone must contain only digits.");
                 }
-                System.out.print(PROPS.getProperty("input.prompt"));
+                System.out.print(props.getProperty("input.prompt"));
             }
 
             // free resources
             input.close();
             cache.clear();
             cache.getCacheManager().shutdown();
+            dirReader.shutdown();
         } catch (IOException e) {
             LOG.error("Got error: ", e);
             System.exit(2);
@@ -88,8 +93,7 @@ public final class PhoneRouter
      */
     private String[] scratchDisk(String phone) throws IOException {
         String[] route = null;
-        DirReader dirReader = new DirReader();
-        List<String[]> total = dirReader.searchPrefixDirWalk(PROPS.getProperty("prices.dir"), phone);
+        List<String[]> total = dirReader.searchPrefixDirWalk(props.getProperty("prices.dir"), phone);
         if (!total.isEmpty()) {
             Comparator<String[]> comparatorByPrefixLength = new CompareByPrefixLength();
             Comparator<String[]> comparatorByPrefThenPrice = comparatorByPrefixLength.thenComparing(new CompareByPrice());
