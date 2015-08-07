@@ -50,9 +50,10 @@ public class FileReader extends SimpleFileVisitor<Path> {
 				lines.forEach(line -> {
                     if (!line.isEmpty()) {
                         String[] prefixPriceOperator = Arrays.copyOf(line.split("\\s+"), 3);
-						// Here is a place for optimisation - use not regex based search but char index based search
-						if (phone.startsWith(prefixPriceOperator[0])) {
-                            String operator = file.getParent().getFileName().toString();
+                        // Here is a place for optimisation - use not regex based search but char index based search
+                        if (phone.startsWith(prefixPriceOperator[0])) {
+                            String fileName = file.getFileName().toString();
+                            String operator = fileName.toLowerCase().substring(0, fileName.length() - 4);
                             prefixPriceOperator[prefixPriceOperator.length - 1] = operator;
                             matches.add(prefixPriceOperator);
                         }
