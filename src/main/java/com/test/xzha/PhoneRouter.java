@@ -35,12 +35,14 @@ public final class PhoneRouter {
         // check argument is provided
         if (args.length == 0) {
             System.out.println("Please provide ini file path as first argument ...");
+            LOG.error("No ini file path provided ...");
             System.exit(1);
         }
         try {
             PhoneRouter pr = new PhoneRouter(args[0]);
             pr.getInputAndProcess();
         } catch (IOException e) {
+            LOG.error(e);
             System.exit(2);
         }
 
