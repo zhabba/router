@@ -1,16 +1,17 @@
 package com.test.xzha.reader;
 
 import com.test.xzha.reader.dir.DirReader;
+import net.sf.ehcache.CacheManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by zhabba on 06.08.15.
@@ -19,17 +20,13 @@ public class DirReaderTest {
     private String dirPath = "src/test/testOps";
     private String wrongDirPath = "src/test/testOops";
 
-    private String phone1 = "100000";
-    private String phone2 = "110000";
-    private String phone3 = "111000";
-    private String phone4 = "111100";
-    private String phone5 = "200000";
-    private String phone6 = "300000";
+    private String[] phones = new String[]{"100000", "110000", "111000", "111100", "200000", "300000"};
 
     private DirReader dr;
 
     @Before
     public void init() {
+        CacheManager.getInstance().clearAll();
         dr = new DirReader();
     }
 
@@ -40,69 +37,76 @@ public class DirReaderTest {
 
     @Test
     public void searchPrefixDirWalkTest() throws IOException {
-        List<String[]> total1 = new ArrayList<>();
-        total1.add(new String[]{"1", "0.9", "op1"});
-        total1.add(new String[]{"1", "0.92", "op2"});
+        String[][] total1 = new String[][]{
+                new String[]{"1", "0.9", "op1"},
+                new String[]{"1", "0.92", "op2"}
+        };
 
-        List<String[]> total2 = new ArrayList<>();
-        total2.add(new String[]{"1", "0.9", "op1"});
-        total2.add(new String[]{"11", "5.1", "op1"});
-        total2.add(new String[]{"1", "0.92", "op2"});
-        total2.add(new String[]{"11", "0.5", "op2"});
+        String[][] total2 = new String[][]{
+                new String[]{"1", "0.9", "op1"},
+                new String[]{"11", "5.1", "op1"},
+                new String[]{"1", "0.92", "op2"},
+                new String[]{"11", "0.5", "op2"}
+        };
 
-        List<String[]> total3 = new ArrayList<>();
-        total3.add(new String[]{"1", "0.9", "op1"});
-        total3.add(new String[]{"11", "5.1", "op1"});
-        total3.add(new String[]{"111", "0.17", "op1"});
-        total3.add(new String[]{"1", "0.92", "op2"});
-        total3.add(new String[]{"11", "0.5", "op2"});
-        total3.add(new String[]{"111", "0.2", "op2"});
+        String[][] total3 = new String[][]{
+                new String[]{"1", "0.9", "op1"},
+                new String[]{"11", "5.1", "op1"},
+                new String[]{"111", "0.17", "op1"},
+                new String[]{"1", "0.92", "op2"},
+                new String[]{"11", "0.5", "op2"},
+                new String[]{"111", "0.2", "op2"}
+        };
 
-        List<String[]> total4 = new ArrayList<>();
-        total4.add(new String[]{"1", "0.9", "op1"});
-        total4.add(new String[]{"11", "5.1", "op1"});
-        total4.add(new String[]{"111", "0.17", "op1"});
-        total4.add(new String[]{"1", "0.92", "op2"});
-        total4.add(new String[]{"11", "0.5", "op2"});
-        total4.add(new String[]{"111", "0.2", "op2"});
-        total4.add(new String[]{"1111", "1.0", "op2"});
+        String[][] total4 = new String[][]{
+                new String[]{"1", "0.9", "op1"},
+                new String[]{"11", "5.1", "op1"},
+                new String[]{"111", "0.17", "op1"},
+                new String[]{"1", "0.92", "op2"},
+                new String[]{"11", "0.5", "op2"},
+                new String[]{"111", "0.2", "op2"},
+                new String[]{"1111", "1.0", "op2"}
+        };
 
-        List<String[]> total5 = new ArrayList<>();
-        total5.add(new String[]{"2", "1.1", "op1"});
+        String[][] total5 = new String[][]{
+                new String[]{"2", "1.1", "op1"}
+        };
 
-        List<String[]> total6 = new ArrayList<>();
+        String[][] total6 = new String[][]{};
 
-        String[][] arr1 = new String[total1.size()][3];
-        List<String[]> res1 = dr.searchPrefixDirWalk(dirPath, phone1);
-        String[][] arr11 = new String[res1.size()][3];
+        String[][][] expects = new String[][][]{total1, total2, total3, total4, total5, total6};
 
-        String[][] arr2 = new String[total2.size()][3];
-        List<String[]> res2 = dr.searchPrefixDirWalk(dirPath, phone2);
-        String[][] arr21 = new String[res2.size()][3];
-
-        String[][] arr3 = new String[total2.size()][3];
-        List<String[]> res3 = dr.searchPrefixDirWalk(dirPath, phone3);
-        String[][] arr31 = new String[res3.size()][3];
-
-        String[][] arr4 = new String[total4.size()][3];
-        List<String[]> res4 = dr.searchPrefixDirWalk(dirPath, phone4);
-        String[][] arr41 = new String[res4.size()][3];
-
-        String[][] arr5 = new String[total5.size()][3];
-        List<String[]> res5 = dr.searchPrefixDirWalk(dirPath, phone5);
-        String[][] arr51 = new String[res5.size()][3];
-
-        assertArrayEquals(total1.toArray(arr1), res1.toArray(arr11));
-        assertArrayEquals(total2.toArray(arr2), res2.toArray(arr21));
-        assertArrayEquals(total3.toArray(arr3), res3.toArray(arr31));
-        assertArrayEquals(total4.toArray(arr4), res4.toArray(arr41));
-        assertArrayEquals(total5.toArray(arr5), res5.toArray(arr51));
-        assertArrayEquals(total6.toArray(), dr.searchPrefixDirWalk(dirPath, phone6).toArray());
+        System.out.println(phones.length);
+        for (int i = 0; i < phones.length; i++) {
+            List<String[]> routesAvailable = dr.searchPrefixDirWalk(dirPath, phones[i]);
+            String[][] arr = new String[routesAvailable.size()][3];
+            for (int j = 0; j < routesAvailable.size(); j++) {
+                arr[j] = routesAvailable.get(j);
+            }
+            Comparator<String[]> comparatorByPrefix = new CompareMd(0);
+            Comparator<String[]> comparatorByPrexixAndOp = comparatorByPrefix.thenComparing(new CompareMd(2));
+            Arrays.sort(expects[i], comparatorByPrexixAndOp);
+            Arrays.sort(arr, comparatorByPrexixAndOp);
+            assertArrayEquals(expects[i], arr);
+        }
     }
 
     @Test(expected = IOException.class)
     public void searchPrefixDirWalkFailedTest() throws IOException {
         DirReader dr = new DirReader();
-        dr.searchPrefixDirWalk(wrongDirPath, phone1);
+        dr.searchPrefixDirWalk(wrongDirPath, phones[0]);
+    }
+
+    private static class CompareMd implements Comparator<String[]> {// descending order
+        private int indexToCompareOn;
+
+        public CompareMd(int indexToCompareOn) {
+            this.indexToCompareOn = indexToCompareOn;
+        }
+
+        @Override
+        public int compare(String[] o1, String[] o2) {
+            return o1[indexToCompareOn].compareTo(o2[indexToCompareOn]);
+        }
     }
 }

@@ -46,6 +46,11 @@ public final class PhoneRouter {
 
     }
 
+    /**
+     * Read STDIN and process phone
+     *
+     * @throws IOException
+     */
     private void getInputAndProcess() throws IOException {
         // read phone from STDIN
         Scanner input = new Scanner(System.in);
@@ -53,12 +58,13 @@ public final class PhoneRouter {
         String phone;
         while (input.hasNext() && (!"exit".equals(phone = input.next().toLowerCase()))) {
             if (isNumeric(phone)) {
-                this.route(phone);
+                displayRoute(phone, route(phone));
             } else {
                 System.out.println("Phone must contain only digits.");
             }
             System.out.print(props.getProperty("input.prompt"));
         }
+
         // free resources
         input.close();
         cache.clear();
@@ -71,12 +77,21 @@ public final class PhoneRouter {
      *
      * @param phone String
      */
-    private void route(String phone) throws IOException {
+    public String[] route(String phone) throws IOException {
         LOG.debug("will route phone: " + phone);
         String[] route = cache.get(phone);
         if (route == null) { // not find route in cache, will search in files
             route = scratchDisk(phone);
         }
+        return route;
+    }
+
+    /**
+     * Just display route if any and related messages
+     *
+     * @param route
+     */
+    private void displayRoute(String phone, String[] route) {
         String message;
         if (route == null || route.length == 0) { // no route for given phone
             message = "No route available for phone " + phone;

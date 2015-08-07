@@ -2,6 +2,7 @@ package com.test.xzha.cache;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -15,6 +16,12 @@ import static org.junit.Assert.*;
 public class RouterCacheTest {
     private String preConfiguredCacheName = "routes";
     private String unConfiguredCacheName = "somecache";
+
+    @Before
+    public void init() {
+        CacheManager.getInstance().removeAllCaches();
+        CacheManager.getInstance().addCache(preConfiguredCacheName);
+    }
 
     @Test
     public void getCacheManagerTest() {
