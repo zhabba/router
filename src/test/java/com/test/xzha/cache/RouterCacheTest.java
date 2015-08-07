@@ -25,7 +25,7 @@ public class RouterCacheTest {
 
     @Test
     public void getCacheManagerTest() {
-        RouterCache preConfiguredCache = new RouterCache(preConfiguredCacheName);
+        RouterCache<String[]> preConfiguredCache = new RouterCache<>(preConfiguredCacheName);
         CacheManager cm1 = preConfiguredCache.getCacheManager();
         CacheManager cm2 = CacheManager.getInstance();
         assertNotNull(cm1);
@@ -34,7 +34,7 @@ public class RouterCacheTest {
 
     @Test
     public void initPreConfiguredCacheByNameTest() {
-        RouterCache preConfiguredCache = new RouterCache(preConfiguredCacheName);
+        RouterCache<String[]> preConfiguredCache = new RouterCache<>(preConfiguredCacheName);
         Cache cache1 = CacheManager.getInstance().getCache(preConfiguredCacheName);
         RouterCache unConfiguredCache = new RouterCache(unConfiguredCacheName);
         Cache cache2 = CacheManager.getInstance().getCache(unConfiguredCacheName);
@@ -51,7 +51,7 @@ public class RouterCacheTest {
     @Test
     public void putEltToCacheTest() {
         CacheManager.getInstance().clearAll();
-        RouterCache preConfiguredCache = new RouterCache(preConfiguredCacheName);
+        RouterCache<String[]> preConfiguredCache = new RouterCache<>(preConfiguredCacheName);
         String[] routeToSave = new String[]{"somePrefix", "somePrice", "someOpName"};
         Cache cache = CacheManager.getInstance().getCache(preConfiguredCacheName);
         assertEquals(0, cache.getSize());
@@ -62,7 +62,7 @@ public class RouterCacheTest {
     @Test
     public void getEltFromCache() {
         CacheManager.getInstance().clearAll();
-        RouterCache preConfiguredCache = new RouterCache(preConfiguredCacheName);
+        RouterCache<String[]> preConfiguredCache = new RouterCache<>(preConfiguredCacheName);
         String[] routeToSave = new String[]{"somePrefix", "somePrice", "someOpName"};
         preConfiguredCache.put("2128506", routeToSave);
         String[] routeFromCache = preConfiguredCache.get("2128506");
@@ -74,7 +74,7 @@ public class RouterCacheTest {
     @Test
     public void clearTest() {
         CacheManager.getInstance().clearAll();
-        RouterCache preConfiguredCache = new RouterCache(preConfiguredCacheName);
+        RouterCache<String[]> preConfiguredCache = new RouterCache<>(preConfiguredCacheName);
         String[] routeToSave = new String[]{"somePrefix", "somePrice", "someOpName"};
         preConfiguredCache.put("2128506", routeToSave);
         preConfiguredCache.put("2128507", routeToSave);

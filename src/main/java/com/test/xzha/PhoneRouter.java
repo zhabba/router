@@ -11,7 +11,7 @@ import java.util.*;
 public final class PhoneRouter {
     private static final Logger LOG = Logger.getLogger(PhoneRouter.class);
     private Properties props;
-    private RouterCache cache;
+    private RouterCache<String[]> cache;
     private DirReader dirReader;
 
     public PhoneRouter(String iniPath) throws IOException {
@@ -19,8 +19,8 @@ public final class PhoneRouter {
         props = RouterConfigReader.readIniFile(iniPath);
 
         // init cache
-        String cacheName = props.getProperty("cache.name", "routes");
-        cache = new RouterCache(cacheName);
+        String cacheName = props.getProperty("cache.route.name", "routes");
+        cache = new RouterCache<>(cacheName);
 
         // init DirReader
         dirReader = new DirReader();

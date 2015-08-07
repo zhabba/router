@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
  * Class com.test.xzha.cache.RouterCache
  * created at 06.08.15 - 13:00
  */
-public class RouterCache {
-	private static final Logger LOG = Logger.getLogger(RouterCache.class);
+public class RouterCache<T> {
+    private static final Logger LOG = Logger.getLogger(RouterCache.class);
 	private static CacheManager CACHE_MANAGER = CacheManager.getInstance();
 	private Cache memCache;
 
@@ -36,16 +36,16 @@ public class RouterCache {
 
 	/**
 	 * Get value from cache
-	 * @param phone String phone
-	 * @return String[] || null
+     * @param key String key
+     * @return String[] || null
 	 */
-	public String[] get(String phone) {
-		String[] cachedRoute = null;
-		Element elt = memCache.get(phone);
-		if (elt != null) {
-			cachedRoute = (String[]) elt.getObjectValue();
-			LOG.debug("Phone " + phone + " cache hits: " + elt.getHitCount());
-		}
+    public T get(String key) {
+        T cachedRoute = null;
+        Element elt = memCache.get(key);
+        if (elt != null) {
+            cachedRoute = (T) elt.getObjectValue();
+            LOG.debug("Phone " + key + " cache hits: " + elt.getHitCount());
+        }
 		return cachedRoute;
 	}
 
@@ -55,8 +55,8 @@ public class RouterCache {
 	 * @param key
 	 * @param value
 	 */
-	public void put(String key, String[] value) {
-		memCache.put(new Element(key, value));
+    public void put(String key, T value) {
+        memCache.put(new Element(key, value));
 	}
 
 	/**
